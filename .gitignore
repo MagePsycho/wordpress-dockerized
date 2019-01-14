@@ -1,2 +1,14 @@
+# Repo
 ./app/wp-content/*
 ./data/*
+
+# Keep folders
+!.keepme
+
+# OS
+._*
+.DS*
+
+# IDE
+.idea/
+.idea_modules/

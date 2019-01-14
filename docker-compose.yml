@@ -58,5 +58,15 @@ services:
        - db
      restart: always
 
+   wordpress-cli:
+       image: wordpress:cli
+       container_name: "${PROJECT_NAME}_wordpress_cli"
+       volumes:
+         - ./app:/var/www/html
+         - ./docker/etc/php-fpm/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+       depends_on:
+         - db
+         - wordpress
+
 volumes:
     db_data:

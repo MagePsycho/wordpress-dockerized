@@ -1,6 +1,6 @@
 # Repo
-./app/wp-content/*
-./data/*
+/app/wp-content/*
+/data/*
 
 # Keep folders
 !.keepme

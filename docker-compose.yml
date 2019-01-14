@@ -1,0 +1,43 @@
+version: '3.3'
+
+services:
+   db:
+     image: mysql:${MYSQL_TAG}
+     #image: mysql:8
+     #command: '--default-authentication-plugin=mysql_native_password'
+     container_name: "${PROJECT_NAME}_db"
+     #env_file: ./docker/.env @todo
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     environment:
+       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+       MYSQL_DATABASE: ${MYSQL_DATABASE}
+       MYSQL_USER: ${MYSQL_USER}
+       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+   wordpress:
+     #@todo custom build so that we can configure Nginx + PHP + WP CLI
+     image: wordpress:latest
+     container_name: "${PROJECT_NAME}_wordpress"
+     depends_on:
+       - db
+     #links:
+     #  - db
+     #env_file: ./docker/.env @todo
+     ports:
+       - "${PORT}:80"
+     restart: always
+     environment:
+       - WORDPRESS_DB_HOST=db:3306
+       - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
+       - WORDPRESS_DB_USER=${MYSQL_USER}
+       - WORDPRESS_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
+       #- WORDPRESS_DB_PREFIX=${MYSQL_PREFIX}
+       #- WORDPRESS_THEME=${THEME_NAME}
+     working_dir: /var/www/html
+     volumes:
+       - ./app/wp-content:/var/www/html/wp-content
+       - ./docker/etc/php-fpm/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
+volumes:
+    db_data:

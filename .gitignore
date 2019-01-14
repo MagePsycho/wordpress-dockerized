@@ -2,7 +2,7 @@
 .env
 /docker/etc/nginx/*
 !/docker/etc/nginx/wordpress.conf.dist
-/app/wp-content/*
+/app/*
 /data/*
 /logs/*
 

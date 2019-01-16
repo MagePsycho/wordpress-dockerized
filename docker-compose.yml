@@ -7,7 +7,7 @@ services:
        image: nginx:latest
        container_name: "${PROJECT_NAME}_nginx"
        ports:
-         - "${NGINX_PORT}:80"
+         - "${NGINX_HTTP_PORT}:80"
        working_dir: /var/www/html
        volumes:
          - ./docker/etc/nginx:/etc/nginx/conf.d
@@ -15,22 +15,24 @@ services:
          - ./app:/var/www/html
        environment:
           - NGINX_HOST=${NGINX_HOST}
-       command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/wordpress.template > /etc/nginx/conf.d/wordpress.conf && nginx -g 'daemon off;'"
+       #command: /bin/sh -c "envsubst '$$NGINX_HOST' < /etc/nginx/conf.d/wordpress.conf > /etc/nginx/conf.d/wordpress.conf && nginx -g 'daemon off;'"
        links:
          - wordpress
        restart: always
 
    # https://hub.docker.com/_/mysql
-   db:
+   mysql:
      image: mysql:${MYSQL_TAG}
 
      # For MySQL 8.0
      #image: mysql:8
      #command: '--default-authentication-plugin=mysql_native_password'
 
-     container_name: "${PROJECT_NAME}_db"
+     container_name: "${PROJECT_NAME}_mysql"
+     ports:
+           - "${MYSQL_PORT}:3306"
      volumes:
-       - db_data:/var/lib/mysql
+       - ./data/mysql:/var/lib/mysql
      environment:
        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
        MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -43,7 +45,7 @@ services:
      image: wordpress:${WP_VERSION}-php${PHP_VERSION}-fpm
      container_name: "${PROJECT_NAME}_wordpress"
      environment:
-       - WORDPRESS_DB_HOST=db:3306
+       - WORDPRESS_DB_HOST=mysql:3306
        - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
        - WORDPRESS_DB_USER=${MYSQL_USER}
        - WORDPRESS_DB_PASSWORD=${MYSQL_ROOT_PASSWORD}
@@ -51,22 +53,22 @@ services:
      volumes:
        - ./app:/var/www/html
        #- ./app/wp-content:/var/www/html/wp-content
-       - ./docker/etc/php-fpm/custom.ini:/usr/local/etc/php/conf.d/zz-custom.ini
+       - ./docker/etc/php-fpm/custom.ini:/usr/local/etc/php/conf.d/999-custom.ini
      #depends_on:
-     #  - db
+     #  - mysql
      links:
-       - db
+       - mysql
      restart: always
 
-   wordpress-cli:
-       image: wordpress:cli
-       container_name: "${PROJECT_NAME}_wordpress_cli"
-       volumes:
-         - ./app:/var/www/html
-         - ./docker/etc/php-fpm/custom.ini:/usr/local/etc/php/conf.d/zz-custom.ini
-       depends_on:
-         - db
-         - wordpress
+#   wordpress-cli:
+#       image: wordpress:cli
+#       container_name: "${PROJECT_NAME}_wordpress_cli"
+#       volumes:
+#         - ./app:/var/www/html
+#         - ./docker/etc/php-fpm/custom.ini:/usr/local/etc/php/conf.d/zz-custom.ini
+#       depends_on:
+#         - mysql
+#         - wordpress
 
    # https://hub.docker.com/r/phpmyadmin/phpmyadmin
    phpmyadmin:
@@ -75,17 +77,15 @@ services:
       ports:
           - "${PMA_PORT}:80"
       environment:
-          PMA_HOST: db
+          PMA_HOST: mysql
       depends_on:
-        - db
+        - mysql
 
    # @todo services
    # jwilder/nginx-proxy
    # composer
    # mailhog
    # redis
+   # phpredisadmin
    # https / letsencrypt
    # blackfire
-
-volumes:
-    db_data:

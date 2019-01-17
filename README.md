@@ -1,5 +1,5 @@
 # Wordpress Dockerized
-Dockerized stack to run the wordpress projects in `LAMP` enviroment.
+Dockerized stack to run the wordpress projects in `LAMP` environment.
 
 ## Services
 - [nginx-proxy](https://hub.docker.com/r/jwilder/nginx-proxy)
@@ -8,22 +8,45 @@ Dockerized stack to run the wordpress projects in `LAMP` enviroment.
 - [phpmyadmin](https://hub.docker.com/r/phpmyadmin/phpmyadmin)
 
 ## Installation
+### Download  
 ```
-# Download the tool
 git clone git@github.com:MagePsycho/wordpress-dockerized.git
+```
+
+### Configure  
+Prepare the environment setting file 
+```
 cd wordpress-dockerized
-
-# Configure .env file
-# Change WP_HTTP_HOST & PMA_HTTP_HOST enviroment variables
 cp .env.dist .env
+```
 
-# Configure nginx virtual host
+Configure the environment variables only if you want to change the default host, port etc.:
+- `WP_HTTP_HOST` Wordpress Domain, Default: wordpress.test
+- `PMA_HTTP_HOST` PhpMyAdmin Domain, Default: phpmyadmin.test
+- etc.
+
+Add entries in `/etc/hosts`
+```
 echo "127.0.0.1 wordpress.test" | sudo tee -a /etc/hosts
 echo "127.0.0.1 phpmyadmin.test" | sudo tee -a /etc/hosts
+```
 
-# Finally run the magic command
+### Containerize  
+Create a unique network for `nginx-proxy` and other Docker containers to communicate through.
+```
+docker network create nginx-proxy
+```
+
+Finally run the magic command
+```
 docker-compose up -d
 ```
+
+All the services must be running. You can check via:
+```
+docker ps -a
+```
+Now you can open the Wordpress & PHPMyAdmin site(see `Connection` section for URLs).
 
 ## Connection:
 

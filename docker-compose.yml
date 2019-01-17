@@ -76,6 +76,21 @@ services:
        - mysql
      restart: always
 
+   wordpress-cli:
+       image: wordpress:cli
+       container_name: "${PROJECT_NAME}_wordpress_cli"
+       user: xfs
+       command: >
+         /bin/sh -c '
+         sleep 10;
+         wp core install --path="/var/www/html" --url="http://${WP_HTTP_HOST}" --title="Dockerized Wordpress" --admin_user=${WP_ADMIN_USER} --admin_password=${WP_ADMIN_PASS} --admin_email=${WP_ADMIN_EMAIL};
+         curl http://loripsum.net/api/4 | wp post generate --post_content --count=10'
+       depends_on:
+         - wordpress
+         - mysql
+       volumes:
+         - ./app:/var/www/html
+
    # https://hub.docker.com/r/phpmyadmin/phpmyadmin
    phpmyadmin:
       image: phpmyadmin/phpmyadmin

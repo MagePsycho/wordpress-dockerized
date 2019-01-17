@@ -1,4 +1,4 @@
-# Wordpress Dockerized [WIP]
+# Wordpress Dockerized
 Dockerized stack to run the wordpress projects in `LAMP` enviroment.
 
 ## Services

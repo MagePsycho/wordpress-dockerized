@@ -83,6 +83,7 @@ Now you can open the Wordpress & PHPMyAdmin site(see `Connection` section for UR
 ## TROUBLESHOOTING
 > ERROR: for wp_nginx-proxy  Cannot start service nginx-proxy: listen tcp 0.0.0.0:80: bind: address already in use
 > ERROR: for mysql  Cannot start service mysql: listen tcp 0.0.0.0:3306: bind: address already in use
+
 Check if port 80 & 3306 are in use and stop the services
 ```
 netstat -tulpn | grep -E '80|3306'

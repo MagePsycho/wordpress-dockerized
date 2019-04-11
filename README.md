@@ -80,6 +80,20 @@ Now you can open the Wordpress & PHPMyAdmin site(see `Connection` section for UR
 - `docker` docker-compose related custom builds & commands (Don't touch unless you know what you are doing)
 - `logs` Web & App logs
 
+## TROUBLESHOOTING
+> ERROR: for wp_nginx-proxy  Cannot start service nginx-proxy: listen tcp 0.0.0.0:80: bind: address already in use
+> ERROR: for mysql  Cannot start service mysql: listen tcp 0.0.0.0:3306: bind: address already in use
+Check if port 80 & 3306 are in use and stop the services
+```
+netstat -tulpn | grep -E '80|3306'
+sudo service nginx stop
+sudo service mysql stop
+netstat -tulpn | grep -E '80|3306'
+```
+
+> ERROR: for wp_mysql  Cannot start service mysql: error while creating mount source path './data/mysql': mkdir /var/www: read-only file system
+Coming Soon
+
 ## ToDos
 - HTTPS support
 - Custom LEMP + Wordpress
